@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
 
 contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     LeisureMetaTimeLock public immutable daoPoolLock;
-    uint256 private _dDay = 1798761600; // 2027-01-01 00:00:00 GMT
+    uint256 private _dDay;
 
     event SetDDay(uint256 dDay);
     event SalesLock(
@@ -23,10 +23,14 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         uint256 totalAmount
     );
 
-    constructor(address daopool) ERC20("LeisureMeta", "LM") {
+    constructor(address daopool, uint256 initialDDay)
+        ERC20("LeisureMeta", "LM")
+    {
         uint256 totalAmount = 5_000_000_000 * (10**uint256(decimals()));
         uint256 sixtyPercent = (totalAmount * 60) / 100;
         uint256 fortyPercent = (totalAmount * 40) / 100;
+
+        _dDay = initialDDay;
 
         daoPoolLock = daoLock(daopool, sixtyPercent);
         _mint(_msgSender(), fortyPercent);
@@ -53,6 +57,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
      * @dev Set D-Day which might be the first day of listing in major crypto exchanges.
      */
     function setDDay(uint256 dDay) external onlyOwner {
+        require(dDay > block.timestamp, "D-Day must be in the future");
         _dDay = dDay;
         emit SetDDay(_dDay);
     }

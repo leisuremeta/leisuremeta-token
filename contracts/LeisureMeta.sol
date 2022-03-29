@@ -232,6 +232,7 @@ contract LeisureMetaTimeLock is Context {
         uint256 dday = LM.getDDay();
 
         while (
+            numberOfLockedItems() > 0 &&
             dday + releaseTime(numberOfLockedItems() - 1) < block.timestamp
         ) {
             amount += lockedAmount(numberOfLockedItems() - 1);

@@ -15,9 +15,17 @@ contract("LeisureMeta", function (accounts) {
     const lm = await LM.deployed();
     const expected = 5_000_000_000n * BigInt(1e18) * 40n / 100n;
     const actual = await lm.balanceOf(accounts[0]);
+    return assert.equal(BigInt(actual), expected);
+  });
+  
+  it("expects to show balance of daopoolAddress 0 as 60% of total supply", async function () {
+    const lm = await LM.deployed();
+    const expected = 5_000_000_000n * BigInt(1e18) * 60n / 100n;
+    const actual = await lm.balanceOf(daopoolAddress);
     return assert.equal(actual, expected);
   });
 
+/*
   it("expects to show valid beneficiery of dao pool lock", async function () {
     const lm = await LM.deployed();
     const daoLockAddress = await lm.daoPoolLock();
@@ -63,4 +71,5 @@ contract("LeisureMeta", function (accounts) {
     const actual = await daoLock.releaseTime(0);
     return assert.equal(actual.toNumber(), expected);
   });
+  */
 });

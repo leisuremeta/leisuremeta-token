@@ -60,9 +60,13 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         require(!paused(), "ERC20Pausable: token transfer while paused");
     }
 
-    function _transfer(address from, address to, uint256 amount) override internal {
+    function _transfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override {
         require(
-            balanceOf(from) > lockedAmount(from) + amount,
+            balanceOf(from) >= lockedAmount(from) + amount,
             "ERC20: insufficient balance"
         );
 
@@ -83,7 +87,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         return _dDay;
     }
 
-    function lockedItem(address beneficiary)
+    function lockedItems(address beneficiary)
         external
         view
         returns (LockedItem[] memory)
@@ -91,7 +95,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         return _lockedItems[beneficiary];
     }
 
-    function revokableLockedItem(address beneficiary)
+    function revocablyLockedItems(address beneficiary)
         external
         view
         returns (LockedItem[] memory)
@@ -103,7 +107,8 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         uint256 total = 0;
         for (uint256 i = 0; i < _lockedItems[beneficiary].length; i++) {
             LockedItem storage item = _lockedItems[beneficiary][i];
-            if (_dDay + item.releaseTime < block.timestamp) total += item.amount;
+            if (_dDay + item.releaseTime > block.timestamp)
+                total += item.amount;
         }
         for (
             uint256 i = 0;
@@ -111,28 +116,49 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             i++
         ) {
             LockedItem storage item = _rovocablyLockedItems[beneficiary][i];
-            if (_dDay + item.releaseTime < block.timestamp) total += item.amount;
+            if (_dDay + item.releaseTime > block.timestamp)
+                total += item.amount;
         }
         return total;
     }
 
-    function clearUnnessaryLockedItems(address from) public {
+    function clearUnnessaryLockedItems(address from) internal {
         while (
-            _lockedItems[from].length > 0 &&
-            _dDay + _lockedItems[from][0].releaseTime < block.timestamp
+            lockedItemSize(from) > 0 &&
+            _dDay + _lockedItems[from][lockedItemSize(from) - 1].releaseTime <
+            block.timestamp
         ) {
             _lockedItems[from].pop();
         }
         while (
-            _rovocablyLockedItems[from].length > 0 &&
-            _dDay + _rovocablyLockedItems[from][0].releaseTime < block.timestamp
+            revocablyLockedItemSize(from) > 0 &&
+            _dDay +
+                _rovocablyLockedItems[from][revocablyLockedItemSize(from) - 1]
+                    .releaseTime <
+            block.timestamp
         ) {
             _rovocablyLockedItems[from].pop();
         }
 
-        if (_lockedItems[from].length == 0) delete _lockedItems[from];
-        if (_rovocablyLockedItems[from].length == 0)
+        if (lockedItemSize(from) == 0) delete _lockedItems[from];
+        if (revocablyLockedItemSize(from) == 0)
             delete _rovocablyLockedItems[from];
+    }
+
+    function lockedItemSize(address beneficiary)
+        internal
+        view
+        returns (uint256)
+    {
+        return _lockedItems[beneficiary].length;
+    }
+
+    function revocablyLockedItemSize(address beneficiary)
+        internal
+        view
+        returns (uint256)
+    {
+        return _rovocablyLockedItems[beneficiary].length;
     }
 
     function daoLock(address beneficiary, uint256 amount)
@@ -142,10 +168,12 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 60; i++) {
-            _lockedItems[beneficiary].push(LockedItem({
-                amount: amount / 60,
-                releaseTime: 30 * aDay * (60 - i - 1)
-            }));
+            _lockedItems[beneficiary].push(
+                LockedItem({
+                    amount: amount / 60,
+                    releaseTime: 30 * aDay * (60 - i - 1)
+                })
+            );
         }
         return true;
     }
@@ -157,19 +185,19 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 9; i++) {
-            _lockedItems[beneficiary].push(LockedItem({
-                amount: amount / 10,
-                releaseTime: 30 * aDay * (10 - i)
-            }));
+            _lockedItems[beneficiary].push(
+                LockedItem({
+                    amount: amount / 10,
+                    releaseTime: 30 * aDay * (10 - i)
+                })
+            );
         }
-        _lockedItems[beneficiary].push(LockedItem({
-            amount: (amount * 9) / 100,
-            releaseTime: 30 * aDay
-        }));
-        _lockedItems[beneficiary].push(LockedItem({
-            amount: amount / 100,
-            releaseTime: 0
-        }));
+        _lockedItems[beneficiary].push(
+            LockedItem({amount: (amount * 9) / 100, releaseTime: 30 * aDay})
+        );
+        _lockedItems[beneficiary].push(
+            LockedItem({amount: amount / 100, releaseTime: 0})
+        );
         emit SalesLock(beneficiary, amount);
         return true;
     }
@@ -181,10 +209,12 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 20; i++) {
-            _lockedItems[beneficiary].push(LockedItem({
-                amount: amount / 20,
-                releaseTime: 30 * aDay * (25 - i)
-            }));
+            _lockedItems[beneficiary].push(
+                LockedItem({
+                    amount: amount / 20,
+                    releaseTime: 30 * aDay * (25 - i)
+                })
+            );
         }
         emit GeneralLock(beneficiary, amount);
         return true;

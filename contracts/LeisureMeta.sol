@@ -4,11 +4,11 @@ pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
+import "@openzeppelin/contracts/utils/Strings.sol";
+
 contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
-    using SafeERC20 for LeisureMeta;
     address public immutable daoLockAddress;
     uint256 private _dDay;
 
@@ -67,7 +67,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     ) internal override {
         require(
             balanceOf(from) >= lockedAmount(from) + amount,
-            "ERC20: insufficient balance"
+            "LM: insufficient balance"
         );
 
         clearUnnessaryLockedItems(from);
@@ -199,6 +199,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             LockedItem({amount: amount / 100, releaseTime: 0})
         );
         emit SalesLock(beneficiary, amount);
+        transfer(beneficiary, amount);
         return true;
     }
 
@@ -209,7 +210,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 20; i++) {
-            _lockedItems[beneficiary].push(
+            _rovocablyLockedItems[beneficiary].push(
                 LockedItem({
                     amount: amount / 20,
                     releaseTime: 30 * aDay * (25 - i)
@@ -217,6 +218,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             );
         }
         emit GeneralLock(beneficiary, amount);
+        transfer(beneficiary, amount);
         return true;
     }
 
@@ -224,13 +226,14 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         uint256 lockedTotal = 0;
         LockedItem[] storage items = _rovocablyLockedItems[from];
         while (items.length > 0) {
-            if (_dDay + items[items.length - 1].releaseTime < block.timestamp) {
+            if (_dDay + items[items.length - 1].releaseTime > block.timestamp) {
                 lockedTotal += items[items.length - 1].amount;
             }
             items.pop();
         }
         delete _rovocablyLockedItems[from];
         emit Revoke(from, lockedTotal, block.timestamp);
-        this.safeTransfer(from, lockedTotal);
+        _approve(from, _msgSender(), lockedTotal);
+        transferFrom(from, _msgSender(), lockedTotal);
     }
 }

@@ -171,7 +171,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             _lockedItems[beneficiary].push(
                 LockedItem({
                     amount: amount / 60,
-                    releaseTime: 30 * aDay * (60 - i - 1)
+                    releaseTime: 30 * aDay * (60 - i)
                 })
             );
         }

@@ -58,7 +58,7 @@ contract("LeisureMeta", function (accounts) {
   it("expects to show valid release time of the last item of dao pool lock", async function () {
     const lm = await LM.deployed();
     const items = await lm.lockedItems(daopoolAddress);
-    const expected = 0;
+    const expected = 30 * 24 * 3600;
     const actual = items[items.length - 1].releaseTime;
 
     return assert.equal(actual, expected);
@@ -67,7 +67,7 @@ contract("LeisureMeta", function (accounts) {
   it("expects to show valid release time of the first item of dao pool lock", async function () {
     const lm = await LM.deployed();
     const items = await lm.lockedItems(daopoolAddress);
-    const expected = 59 * 30 * 24 * 3600;
+    const expected = 60 * 30 * 24 * 3600;
     const actual = items[0].releaseTime;
 
     return assert.equal(actual, expected);

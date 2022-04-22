@@ -164,7 +164,6 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     function daoLock(address beneficiary, uint256 amount)
         internal
         onlyOwner
-        returns (bool)
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 60; i++) {
@@ -175,13 +174,11 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
                 })
             );
         }
-        return true;
     }
 
     function saleLock(address beneficiary, uint256 amount)
         external
         onlyOwner
-        returns (bool)
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 9; i++) {
@@ -200,13 +197,11 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         );
         emit SalesLock(beneficiary, amount);
         transfer(beneficiary, amount);
-        return true;
     }
 
     function generalLock(address beneficiary, uint256 amount)
         external
         onlyOwner
-        returns (bool)
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 20; i++) {
@@ -219,7 +214,6 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         }
         emit GeneralLock(beneficiary, amount);
         transfer(beneficiary, amount);
-        return true;
     }
 
     function revoke(address from) external onlyOwner {

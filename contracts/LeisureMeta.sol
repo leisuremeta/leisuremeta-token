@@ -250,4 +250,8 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     function pause() external onlyOwner {
         _pause();
     }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
 }

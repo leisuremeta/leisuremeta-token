@@ -23,7 +23,7 @@
  require('dotenv').config();
 
  const fs = require('fs');
- const mnemonicRinkeby = fs.readFileSync(".secret.rinkeby").toString().trim();
+ const goerliPrivate = fs.readFileSync(".secret.goerli").toString().trim();
  const mnemonicMainnet = fs.readFileSync(".secret.mainnet").toString().trim();
 
 module.exports = {
@@ -48,14 +48,14 @@ module.exports = {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
-      gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
+      gas: 6700000,           // Gas sent with each transaction (default: ~6700000)
     },
-    rinkeby: {
+    goerli: {
       provider: () => new HDWalletProvider({
-        mnemonic: mnemonicRinkeby,
-        providerOrUrl: "https://rinkeby.infura.io/v3/4116cf56334c44a0a1e9e264b251b949"
+        privateKeys: [goerliPrivate],
+        providerOrUrl: "https://goerli.infura.io/v3/4116cf56334c44a0a1e9e264b251b949"
       }),
-      network_id: 4,       // Rinkeby's id
+      network_id: 5,       // Goerli's id
       gas: 8000000,
     },
     mainnet: {

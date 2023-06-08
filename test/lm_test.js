@@ -1,5 +1,4 @@
 const LM = artifacts.require("LeisureMeta");
-const Lock = artifacts.require("LeisureMetaTimeLock");
 const fs = require("fs");
 const daopoolAddress = fs
   .readFileSync(`${__dirname}/../.secret.daopool`)

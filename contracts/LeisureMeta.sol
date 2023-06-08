@@ -78,7 +78,6 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
      * @dev Set D-Day which might be the first day of listing in major crypto exchanges.
      */
     function setDDay(uint256 dDay) external onlyOwner {
-        require(dDay > block.timestamp, "D-Day must be in the future");
         _dDay = dDay;
         emit SetDDay(_dDay);
     }

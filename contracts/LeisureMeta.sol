@@ -38,7 +38,6 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         daoLockAddress = daopool;
 
         _mint(daopool, sixtyPercent);
-        daoLock(daopool, sixtyPercent);
         _mint(_msgSender(), fortyPercent);
     }
 
@@ -161,7 +160,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     }
 
     function daoLock(address beneficiary, uint256 amount)
-        internal
+        external
         onlyOwner
     {
         uint256 aDay = 24 * 3600;
@@ -228,5 +227,9 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         emit Revoke(from, lockedTotal, block.timestamp);
         _approve(from, _msgSender(), lockedTotal);
         transferFrom(from, _msgSender(), lockedTotal);
+    }
+
+    function pause() external onlyOwner {
+        _pause();
     }
 }

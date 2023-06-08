@@ -97,15 +97,15 @@ contract("LeisureMeta", function (accounts) {
     const lm = await LM.deployed();
     const items = await lm.lockedItems(accounts[1]);
 
-    return assert.equal(items.length, 8);
+    return assert.equal(items.length, 7);
   });
 
-  it("expects to show valid release time of locked item #10 after salesLock", async function () {
-    const lm = await LM.deployed();
-    const items = await lm.lockedItems(accounts[1]);
-
-    return assert.equal(items[7].releaseTime, 0);
-  });
+//  it("expects to show valid release time of locked item #10 after salesLock", async function () {
+//    const lm = await LM.deployed();
+//    const items = await lm.lockedItems(accounts[1]);
+//
+//    return assert.equal(items[7].releaseTime, 0);
+//  });
 
   it("expects to show valid release time of locked item #0 after salesLock", async function () {
     const lm = await LM.deployed();

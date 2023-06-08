@@ -22,23 +22,22 @@ contract("LeisureMeta", function (accounts) {
     return assert.equal(BigInt(actual), expected);
   });
 
-//  it("expects to show balance of daopoolAddress 0 as 60% of total supply", async function () {
-//    const lm = await LM.deployed();
-//    const daoBalance = await lm.balanceOf(daopoolAddress);
-//    await lm.daoLock(daopoolAddress, daoBalance);
-//    const expected = (5_000_000_000n * BigInt(1e18) * 60n) / 100n;
-//    const actual = await lm.balanceOf(daopoolAddress);
-//
-//    return assert.equal(actual, expected);
-//  });
+  it("expects to show valid balance of daopoolAddress after daoLock", async function () {
+    const lm = await LM.deployed();
+    const daoBalance = (5_000_000_000n * BigInt(1e18) * 60n) / 100n;
+    await lm.daoLock(daopoolAddress, daoBalance);
+    const actual = await lm.balanceOf(daopoolAddress);
 
-//  it("expects to show valid beneficiery of dao pool lock", async function () {
-//    const lm = await LM.deployed();
-//    const expected = daopoolAddress;
-//    const actual = await lm.daoLockAddress();
-//
-//    return assert.equal(actual, expected);
-//  });
+    return assert.equal(actual, daoBalance);
+  });
+
+  it("expects to show valid beneficiery of dao pool lock", async function () {
+    const lm = await LM.deployed();
+    const expected = daopoolAddress;
+    const actual = await lm.daoLockAddress();
+
+    return assert.equal(actual, expected);
+  });
 
 //  it("expects to show locked amount of dao pool lock as 60% of total supply", async function () {
 //    const lm = await LM.deployed();
@@ -50,13 +49,13 @@ contract("LeisureMeta", function (accounts) {
 //    return assert.equal(actual, expected);
 //  });
 
-//  it("expects to show valid number of locked item of dao pool lock", async function () {
-//    const lm = await LM.deployed();
-//    const expected = 60;
-//    const items = await lm.lockedItems(daopoolAddress);
-//
-//    return assert.equal(items.length, expected);
-//  });
+  it("expects to show valid number of locked item of dao pool lock", async function () {
+    const lm = await LM.deployed();
+    const expected = 60;
+    const items = await lm.lockedItems(daopoolAddress);
+
+    return assert.equal(items.length, expected);
+  });
 
 //  it("expects to show valid release time of the last item of dao pool lock", async function () {
 //    const lm = await LM.deployed();

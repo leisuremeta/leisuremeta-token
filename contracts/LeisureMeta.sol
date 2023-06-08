@@ -177,7 +177,8 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             );
         }
         emit DaoLock(beneficiary, amount);
-        transfer(beneficiary, amount);
+        address owner = _msgSender();
+        super._transfer(owner, beneficiary, amount);
     }
 
     function saleLock(address beneficiary, uint256 amount)
@@ -194,7 +195,8 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
             );
         }
         emit SalesLock(beneficiary, amount);
-        transfer(beneficiary, amount);
+        address owner = _msgSender();
+        super._transfer(owner, beneficiary, amount);
     }
 
     function generalLock(address beneficiary, uint256 amount)

@@ -179,10 +179,10 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         onlyOwner
     {
         uint256 aDay = 24 * 3600;
-        for (uint256 i = 0; i < 9; i++) {
+        for (uint256 i = 0; i < 6; i++) {
             _lockedItems[beneficiary].push(
                 LockedItem({
-                    amount: amount / 10,
+                    amount: amount / 7,
                     releaseTime: 30 * aDay * (10 - i)
                 })
             );
@@ -213,6 +213,24 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         emit GeneralLock(beneficiary, amount);
         transfer(beneficiary, amount);
     }
+    
+    function customLock(address beneficiary, uint256 amount, uint256 partition, uint256 startMonth)
+        external
+        onlyOwner
+    {
+        uint256 aDay = 24 * 3600;
+        for (uint256 i = 0; i < partition; i++) {
+            _rovocablyLockedItems[beneficiary].push(
+                LockedItem({
+                    amount: amount / partition,
+                    releaseTime: 30 * aDay * ((partition + startMonth) - i)
+                })
+            );
+        }
+        emit GeneralLock(beneficiary, amount);
+        transfer(beneficiary, amount);
+    }
+
 
     function revoke(address from) external onlyOwner {
         uint256 lockedTotal = 0;

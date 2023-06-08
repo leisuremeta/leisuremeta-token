@@ -22,8 +22,15 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     }
 
     event SetDDay(uint256 dDay);
+    event DaoLock(address indexed beneficiary, uint256 totalAmount);
     event SalesLock(address indexed beneficiary, uint256 totalAmount);
     event GeneralLock(address indexed beneficiary, uint256 totalAmount);
+    event CustomLock(
+        address indexed beneficiary,
+        uint256 totalAmount,
+        uint256 partition,
+        uint256 startMonth
+    );
     event Revoke(address indexed from, uint256 amount, uint256 revokeTime);
 
     constructor(address daopool, uint256 initialDDay)
@@ -31,14 +38,11 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         require(daopool != address(0), "LeisureMeta: daopool is zero address");
         uint256 totalAmount = 5_000_000_000 * (10**uint256(decimals()));
-        uint256 sixtyPercent = (totalAmount * 60) / 100;
-        uint256 fortyPercent = (totalAmount * 40) / 100;
 
         _dDay = initialDDay;
         daoLockAddress = daopool;
 
-        _mint(daopool, sixtyPercent);
-        _mint(_msgSender(), fortyPercent);
+        _mint(_msgSender(), totalAmount);
     }
 
     /**
@@ -172,6 +176,8 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
                 })
             );
         }
+        emit DaoLock(beneficiary, amount);
+        transfer(beneficiary, amount);
     }
 
     function saleLock(address beneficiary, uint256 amount)
@@ -221,7 +227,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
                 })
             );
         }
-        emit GeneralLock(beneficiary, amount);
+        emit CustomLock(beneficiary, amount, partition, startMonth);
         transfer(beneficiary, amount);
     }
 

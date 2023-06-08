@@ -39,21 +39,22 @@ contract("LeisureMeta", function (accounts) {
     return assert.equal(actual, expected);
   });
 
-//  it("expects to show locked amount of dao pool lock as 60% of total supply", async function () {
-//    const lm = await LM.deployed();
-//    const daoBalance = await lm.balanceOf(daopoolAddress);
-//    await lm.daoLock(daopoolAddress, daoBalance);
-//    const expected = (5_000_000_000n * BigInt(1e18) * 60n) / 100n;
-//    const actual = await lm.lockedAmount(daopoolAddress);
-//
-//    return assert.equal(actual, expected);
-//  });
+  it("expects to show locked amount of dao pool lock as 57% of total supply", async function () {
+    const lm = await LM.deployed();
+    const daoBalance = await lm.balanceOf(daopoolAddress);
+    const expected = (5_000_000_000n * BigInt(1e18) * 57n) / 100n;
+    const actual = await lm.lockedAmount(daopoolAddress);
+//    console.log("daoBalance", web3.utils.toBN(actual).toString());
+    return assert.equal(actual, expected);
+  });
 
   it("expects to show valid number of locked item of dao pool lock", async function () {
     const lm = await LM.deployed();
     const expected = 60;
     const items = await lm.lockedItems(daopoolAddress);
 
+//    console.log("Locked Items: ", items);
+//    console.log("Current Time: ", Math.floor(Date.now() / 1000));
     return assert.equal(items.length, expected);
   });
 

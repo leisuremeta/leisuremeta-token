@@ -171,4 +171,41 @@ contract("LeisureMeta", function (accounts) {
 
     return assert.equal(balance, 0);
   });
+
+  it("expects to pause token transfers", async function () {
+    const lm = await LM.deployed();
+    await lm.pause();
+    const isPaused = await lm.paused();
+
+    return assert.equal(isPaused, true);
+  });
+
+  it("expects to unpause token transfers", async function () {
+    const lm = await LM.deployed();
+    await lm.unpause();
+    const isPaused = await lm.paused();
+
+    return assert.equal(isPaused, false);
+  });
+
+  it("expects to change owner after transferOwnership", async function () {
+    const lm = await LM.deployed();
+    await lm.transferOwnership(accounts[1]);
+    const owner = await lm.owner();
+
+    return assert.equal(owner, accounts[1]);
+  });
+  
+  it("expects to not paused after transfer ownership", async function () {
+    const lm = await LM.deployed();
+    try {
+      await lm.pause();
+      return assert.fail();
+    } catch (e) {
+
+    }
+    const isPaused = await lm.paused();
+
+    return assert.equal(isPaused, false);
+  });
 });

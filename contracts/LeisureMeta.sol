@@ -14,7 +14,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
 
     mapping(address => LockedItem[]) private _lockedItems;
 
-    mapping(address => LockedItem[]) private _rovocablyLockedItems;
+    mapping(address => LockedItem[]) private _revocablyLockedItems;
 
     struct LockedItem {
         uint256 amount;
@@ -102,7 +102,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         view
         returns (LockedItem[] memory)
     {
-        return _rovocablyLockedItems[beneficiary];
+        return _revocablyLockedItems[beneficiary];
     }
 
     function lockedAmount(address beneficiary) public view returns (uint256) {
@@ -114,10 +114,10 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         }
         for (
             uint256 i = 0;
-            i < _rovocablyLockedItems[beneficiary].length;
+            i < _revocablyLockedItems[beneficiary].length;
             i++
         ) {
-            LockedItem storage item = _rovocablyLockedItems[beneficiary][i];
+            LockedItem storage item = _revocablyLockedItems[beneficiary][i];
             if (_dDay + item.releaseTime > block.timestamp)
                 total += item.amount;
         }
@@ -135,16 +135,16 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         while (
             revocablyLockedItemSize(from) > 0 &&
             _dDay +
-                _rovocablyLockedItems[from][revocablyLockedItemSize(from) - 1]
+                _revocablyLockedItems[from][revocablyLockedItemSize(from) - 1]
                     .releaseTime <
             block.timestamp
         ) {
-            _rovocablyLockedItems[from].pop();
+            _revocablyLockedItems[from].pop();
         }
 
         if (lockedItemSize(from) == 0) delete _lockedItems[from];
         if (revocablyLockedItemSize(from) == 0)
-            delete _rovocablyLockedItems[from];
+            delete _revocablyLockedItems[from];
     }
 
     function lockedItemSize(address beneficiary)
@@ -160,7 +160,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
         view
         returns (uint256)
     {
-        return _rovocablyLockedItems[beneficiary].length;
+        return _revocablyLockedItems[beneficiary].length;
     }
 
     function daoLock(address beneficiary, uint256 amount)
@@ -205,7 +205,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < 20; i++) {
-            _rovocablyLockedItems[beneficiary].push(
+            _revocablyLockedItems[beneficiary].push(
                 LockedItem({
                     amount: amount / 20,
                     releaseTime: 30 * aDay * (25 - i)
@@ -222,7 +222,7 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     {
         uint256 aDay = 24 * 3600;
         for (uint256 i = 0; i < partition; i++) {
-            _rovocablyLockedItems[beneficiary].push(
+            _revocablyLockedItems[beneficiary].push(
                 LockedItem({
                     amount: amount / partition,
                     releaseTime: 30 * aDay * ((partition + startMonth) - i)
@@ -236,14 +236,14 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
 
     function revoke(address from) external onlyOwner {
         uint256 lockedTotal = 0;
-        LockedItem[] storage items = _rovocablyLockedItems[from];
+        LockedItem[] storage items = _revocablyLockedItems[from];
         while (items.length > 0) {
             if (_dDay + items[items.length - 1].releaseTime > block.timestamp) {
                 lockedTotal += items[items.length - 1].amount;
             }
             items.pop();
         }
-        delete _rovocablyLockedItems[from];
+        delete _revocablyLockedItems[from];
         emit Revoke(from, lockedTotal, block.timestamp);
         _approve(from, _msgSender(), lockedTotal);
         transferFrom(from, _msgSender(), lockedTotal);

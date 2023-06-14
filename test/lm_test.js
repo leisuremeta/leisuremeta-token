@@ -31,13 +31,13 @@ contract("LeisureMeta", function (accounts) {
     return assert.equal(actual, daoBalance);
   });
 
-  it("expects to show valid beneficiery of dao pool lock", async function () {
-    const lm = await LM.deployed();
-    const expected = daopoolAddress;
-    const actual = await lm.daoLockAddress();
-
-    return assert.equal(actual, expected);
-  });
+//  it("expects to show valid beneficiery of dao pool lock", async function () {
+//    const lm = await LM.deployed();
+//    const expected = daopoolAddress;
+//    const actual = await lm.daoLockAddress();
+//
+//    return assert.equal(actual, expected);
+//  });
 
   it("expects to show locked amount of dao pool lock as 57% of total supply", async function () {
     const lm = await LM.deployed();

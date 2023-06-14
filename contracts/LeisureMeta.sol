@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
-    address public immutable daoLockAddress;
     uint256 private _dDay;
 
     mapping(address => LockedItem[]) private _lockedItems;
@@ -33,14 +32,12 @@ contract LeisureMeta is ERC20Burnable, Ownable, Pausable {
     );
     event Revoke(address indexed from, uint256 amount, uint256 revokeTime);
 
-    constructor(address daopool, uint256 initialDDay)
+    constructor(uint256 initialDDay)
         ERC20("LeisureMeta", "LM")
     {
-        require(daopool != address(0), "LeisureMeta: daopool is zero address");
         uint256 totalAmount = 5_000_000_000 * (10**uint256(decimals()));
 
         _dDay = initialDDay;
-        daoLockAddress = daopool;
 
         _mint(_msgSender(), totalAmount);
     }
